@@ -60,7 +60,7 @@
 
     </table>
 
-</div>  
+</div>
 
 @if($files->count() != 0)
 <div class="table-responsive">

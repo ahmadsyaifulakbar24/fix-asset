@@ -85,11 +85,12 @@
             <hr class="sidebar-divider">
             @endif
 
+            
+            @if (Auth::user()->role != 'super-admin')
             <!-- Heading -->
             <div class="sidebar-heading">
                 Data
             </div>
-
             <!-- Nav Item - Tables -->
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('asset_request') }}">
@@ -99,6 +100,7 @@
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
+            @endif
 
             <!-- Sidebar Toggler (Sidebar) -->
             <div class="text-center d-none d-md-inline">

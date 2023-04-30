@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AssetRequestController extends Controller
 {
@@ -292,6 +293,13 @@ class AssetRequestController extends Controller
         $file->delete();
         
         return redirect()->route('asset_request.show', $asset_request_id)->with('success', 'File Has Been Deleted Successfully');
+    }
+
+    public function pdf(AssetRequest $asset_request)
+    {
+        $pdf = Pdf::loadView('pdf.asset_request_pdf', compact('asset_request'));
+        $pdf->setPaper('a4', 'landscape');
+        return $pdf->stream();
     }
 
     protected function auto_number()

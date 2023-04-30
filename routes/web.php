@@ -75,6 +75,7 @@ Route::middleware(['auth'])->group(function () {
         Route::put('/{asset_request:id}', 'update')->name('asset_request.update');
         Route::delete('/{asset_request:id}', 'destroy')->name('asset_request.destroy');
         Route::post('/{asset_request:id}/submit', 'submit')->name('asset_request.submit');
+        Route::get('/{asset_request:id}/pdf', 'pdf')->name('asset_request.pdf');
 
         Route::prefix('/{asset_request:id}')->group(function() {
             Route::get('/create', 'asset_request_create')->name('sub_asset_request.create');

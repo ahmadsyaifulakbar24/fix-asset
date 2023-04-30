@@ -69,7 +69,7 @@
                 ($asset_request->status == 'draft' && $asset_request->role_status == 'employee' && Auth::user()->role == 'employee') || 
                 ($asset_request->status == 'rejected' && $asset_request->role_status == 'employee' && Auth::user()->role == 'employee')
             )
-                <form method="POST" action="{{ route('asset_request.submit', $asset_request->id) }}" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('asset_request.submit', $asset_request->id) }}" enctype="multipart/form-data" class="mr-3">
                     @csrf
                     <input type="hidden" name="status" value="submit">
                     <button type="submit" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm">
@@ -83,10 +83,14 @@
                     Rejected
                 </button>
 
-                <button type="button" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm" id="approvedBtn" data-toggle="modal" data-target="#submitModal">
+                <button type="button" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mr-3" id="approvedBtn" data-toggle="modal" data-target="#submitModal">
                     Approve
                 </button>
             @endif
+
+            <a href="{{ route('asset_request.pdf', $asset_request->id) }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm mr-3" target="_blank">
+                <i class="fas fa-download fa-sm text-white-50"></i> Download PDF
+            </a>
         </div>
 
         <div class="mt-3">
