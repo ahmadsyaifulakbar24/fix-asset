@@ -8,6 +8,8 @@ use App\Models\AssetRequest;
 use App\Models\Category;
 use App\Models\File;
 use App\Models\SubAssetRequest;
+use App\Models\User;
+use App\Notifications\AssetRequestNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -133,24 +135,38 @@ class AssetRequestController extends Controller
         
         $input = $request->only(['status']);
 
+        // notification
+        $user_notification = User::where('location_id', $user->location_id);
+
         if($status == 'submit' || $status == 'approved') {
             if ($user->role == 'employee') {
                 $input['role_status'] = 'manager';
+                $user_notification->where([
+                    ['department_id', $user->department_id],
+                    ['role', 'manager']
+                ]);
             } else if ($user->role == 'manager') {
                 $input['role_status'] = 'finance';
+                $user_notification->where('role', 'finance');
             } else if ($user->role == 'finance') {
                 $input['role_status'] = 'it';
+                $user_notification->where('role', 'it');
             } else if ($user->role == 'it') {
                 $input['role_status'] = 'ga';
+                $user_notification->where('role', 'ga');
             } else if ($user->role == 'ga') {
                 $input['role_status'] = 'hrga';
+                $user_notification->where('role', 'hrga');
             } else if ($user->role == 'hrga') {
                 $input['role_status'] = 'presdir';
+                $user_notification->where('role', 'presdir');
             } else if ($user->role == 'presdir') {
                 $input['role_status'] = 'finish';
+                $user_notification->where('id', $asset_request->user_id);
             }
         } else {
             $input['role_status'] = 'employee';
+            $user_notification->where('id', $asset_request->user_id);
         }
         $input['approve_step'] = $user->role;
 
@@ -173,6 +189,12 @@ class AssetRequestController extends Controller
         $input_history['outcome'] = $request->status;
         $input_history['comment'] = !empty($request->comment) ? $request->comment : '-' ;
         ApprovalHistory::create($input_history);
+
+        
+
+        foreach($user_notification->get() as $user_notif) {
+            $user_notif->notify(new AssetRequestNotification($asset_request, $user, $user_notif));
+        }
 
         return redirect()->route('asset_request.show', $asset_request->id)->with('success', 'Asset Has Been '.$message.' Successfully');
     }
