@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AssetRequestExport;
 use App\Helpers\FileHelpers;
 use App\Models\ApprovalHistory;
 use App\Models\AssetRequest;
@@ -15,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AssetRequestController extends Controller
 {
@@ -86,7 +88,7 @@ class AssetRequestController extends Controller
      */
     public function show(AssetRequest $asset_request)
     {
-        $files = File::orderBy('created_at', 'desc')->get();
+        $files = $asset_request->file()->orderBy('created_at', 'desc')->get();
         $sub_asset_requests = $asset_request->sub_asset_request()->orderBy('created_at', 'asc')->get();
         return view('pages.asset_request.asset.show_asset_request', compact('asset_request', 'sub_asset_requests', 'files'));
     }
@@ -126,10 +128,9 @@ class AssetRequestController extends Controller
     public function submit(Request $request, AssetRequest $asset_request) 
     {
         $request->validate([
-            'status' => ['required', 'in:submit,rejected,approved'],
+            'status' => ['required', 'in:submit,rejected,approved,revision'],
             'comment' => ['nullable', 'string'],
         ]);
-
         
         $user = Auth::user();
         $status = $request->status;
@@ -179,9 +180,12 @@ class AssetRequestController extends Controller
         } else if ($status == 'approved') {
             $message = 'Approved';
             $task = 'approval';
-        } else {
+        } else if ($status == 'rejected') {
             $message = 'Rejected';
             $task = 'rejected';
+        } else {
+            $message = 'Revision';
+            $task = 'revision';
         }
 
         $input_history['asset_request_id'] = $asset_request->id;
@@ -190,8 +194,6 @@ class AssetRequestController extends Controller
         $input_history['outcome'] = $request->status;
         $input_history['comment'] = !empty($request->comment) ? $request->comment : '-' ;
         ApprovalHistory::create($input_history);
-
-        
 
         foreach($user_notification->get() as $user_notif) {
             $user_notif->notify(new AssetRequestNotification($asset_request, $user, $user_notif));
@@ -300,6 +302,20 @@ class AssetRequestController extends Controller
         $pdf = Pdf::loadView('pdf.asset_request_pdf', compact('asset_request'));
         $pdf->setPaper('a4', 'landscape');
         return $pdf->stream();
+    }
+
+    public function download_excel(Request $request)
+    {
+        $user = Auth::user();
+
+        if($user->role == 'employee') {
+            $asset_request = AssetRequest::where('user_id', $user->id)->get();
+        } else if($user->role == 'manager') {
+            $asset_request = AssetRequest::where('department_id', $user->department_id)->get();
+        } else {
+            $asset_request = AssetRequest::where('location_id', $user->location_id)->get();
+        }
+        return Excel::download(new AssetRequestExport($asset_request), 'asset_request.xlsx');
     }
 
     protected function auto_number()

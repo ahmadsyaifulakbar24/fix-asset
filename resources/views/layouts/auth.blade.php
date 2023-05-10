@@ -19,12 +19,32 @@
 
     <!-- Custom styles for this template-->
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
+    <style>
+        .bg-login-image {
+            background: url({{ asset('img/login.png') }})
+        }
 
+        .bg-login {
+            background-position: center center;
+            background-size: cover;
+            height: 100vh;
+            background-image: url({{ asset('img/bg-login.webp') }});
+        }
+
+        .bg-login-layer {
+            background: rgba(13, 76, 146, 0.5);
+            height: 100vh;
+        }
+    </style>
 </head>
 
 <body class="bg-gradient-primary">
 
-    @yield('content')
+    <div class="bg-login">
+        <div class="bg-login-layer">
+            @yield('content')
+        </div>
+    </div>
 
     <!-- Bootstrap core JavaScript-->
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>

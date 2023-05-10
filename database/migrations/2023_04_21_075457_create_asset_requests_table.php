@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users')->onUpdate('cascade');
             $table->foreignId('department_id')->constrained('departments')->onUpdate('cascade');
             $table->foreignId('location_id')->constrained('locations')->onUpdate('cascade');
-            $table->enum('status', ['draft', 'submit', 'rejected', 'approved']);
+            $table->enum('status', ['draft', 'submit', 'rejected', 'approved', 'revision']);
             $table->enum('role_status', ['employee', 'manager', 'finance', 'it', 'ga', 'hrga', 'presdir', 'finish']);
             $table->enum('approve_step', ['employee', 'manager', 'finance', 'it', 'ga', 'hrga', 'presdir', 'finish']);
             $table->timestamps();

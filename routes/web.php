@@ -69,6 +69,7 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('asset_request')->controller(AssetRequestController::class)->group(function() {
         Route::get('/', 'index')->name('asset_request');
         Route::get('/create', 'create')->name('asset_request.create');
+        Route::get('/download', 'download_excel')->name('asset_request.download');
         Route::post('/', 'store')->name('asset_request.store');
         Route::get('/{asset_request:id}', 'show')->name('asset_request.show');
         Route::get('/{asset_request:id}/edit', 'edit')->name('asset_request.edit');

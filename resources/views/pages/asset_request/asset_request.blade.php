@@ -23,6 +23,10 @@
     <div class="card-body">
         @if (Auth::user()->role == 'employee')
             <div class="mb-4 d-flex justify-content-end">
+                <a href="{{ route('asset_request.download') }}" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mr-3">
+                    <i class="fas fa-download fa-sm text-white-50"></i> Download All Asset Request
+                </a>
+
                 <a href="{{ route('asset_request.create') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                     <i class="fas fa-plus fa-sm text-white-50"></i> Create Asset Request
                 </a>
@@ -71,19 +75,23 @@
                             {{ $status }}
                         </td>
                         <td>
-                            @if ($asset_request->status == 'draft' || ($asset_request->status == 'rejected' && Auth::user()->role == 'employee'))
-                                <form action="{{ route('asset_request.destroy',$asset_request->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
+                            <form action="{{ route('asset_request.destroy',$asset_request->id) }}" method="POST">
+                                @csrf
+                                @method('DELETE')
+                                @if (
+                                    $asset_request->status == 'draft' && Auth::user()->role == 'employee' || 
+                                    ($asset_request->status == 'revision' && Auth::user()->role == 'employee')
+                                )
                                     <a href="{{ route('asset_request.edit', $asset_request->id) }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
                                         <i class="fas fa-pencil-alt fa-sm text-white-50"></i>
                                     </a>
-
+                                @endif
+                                @if ($asset_request->status == 'draft' && Auth::user()->role == 'employee')
                                     <button type="submit" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm" onclick="return checkDelete()">
                                         <i class="fas fa-trash-alt fa-sm text-white-50"></i>
                                     </button>
-                                </form>
-                            @endif
+                                @endif
+                            </form>
                         </td>
                     </tr>
                     @endforeach

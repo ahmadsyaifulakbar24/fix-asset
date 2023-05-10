@@ -142,7 +142,7 @@
                         <td>{{ \Carbon\Carbon::parse($approval_history->created_at)->format('Y-m-d H:i:s') }}</td>
                         <td>{{ $approval_history->task }}</td>
                         <td>{{ $approval_history->name }}</td>
-                        <td>{{ $approval_history->outcome }}</td>
+                        <td>{{ $approval_history->outcome == 'submit' ? 'request' : $approval_history->outcome }}</td>
                         <td>{{ $approval_history->comment }}</td>
                     </tr>
                 @endforeach

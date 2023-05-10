@@ -56,7 +56,10 @@
     <div class="card-body">
         <div class="mb-4 d-flex justify-content-end">
 
-            @if ($asset_request->status == 'draft' || ($asset_request->status == 'rejected' && Auth::user()->role == 'employee'))
+            @if (
+                $asset_request->status == 'draft' && Auth::user()->role == 'employee' || 
+                ($asset_request->status == 'revision' && Auth::user()->role == 'employee')
+            )
                 <a href="{{ route('sub_asset_request.create', $asset_request->id) }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm mr-3">
                     <i class="fas fa-plus fa-sm text-white-50"></i> Create Asset
                 </a>
@@ -67,7 +70,7 @@
 
             @if (
                 ($asset_request->status == 'draft' && $asset_request->role_status == 'employee' && Auth::user()->role == 'employee') || 
-                ($asset_request->status == 'rejected' && $asset_request->role_status == 'employee' && Auth::user()->role == 'employee')
+                ($asset_request->status == 'revision' && $asset_request->role_status == 'employee' && Auth::user()->role == 'employee')
             )
                 <form method="POST" action="{{ route('asset_request.submit', $asset_request->id) }}" enctype="multipart/form-data" class="mr-3">
                     @csrf
@@ -81,6 +84,10 @@
             @if ((Auth::user()->role != 'employee' && $asset_request->role_status == Auth::user()->role) || $asset_request->status == 'finish')
                 <button type="button" class="d-none d-sm-inline-block btn btn-sm btn-danger shadow-sm mr-3" id="rejectedBtn" data-toggle="modal" data-target="#submitModal">
                     Rejected
+                </button>
+
+                <button type="button" class="d-none d-sm-inline-block btn btn-sm btn-warning shadow-sm mr-3" id="revisionBtn" data-toggle="modal" data-target="#submitModal">
+                    Revision
                 </button>
 
                 <button type="button" class="d-none d-sm-inline-block btn btn-sm btn-success shadow-sm mr-3" id="approvedBtn" data-toggle="modal" data-target="#submitModal">
@@ -145,6 +152,11 @@
 
             $("#rejectedBtn").click(function() {
 				var value = "rejected";
+				$("#statusInput").val(value);
+			});
+
+            $("#revisionBtn").click(function() {
+				var value = "revision";
 				$("#statusInput").val(value);
 			});
 		});

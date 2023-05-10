@@ -46,7 +46,7 @@ class AssetRequest extends Model
 
     public function file(): HasMany
     {
-        return $this->hasMany(File::class, 'reference_id')->where('model', 'asset_request');
+        return $this->hasMany(File::class, 'reference_id')->where('model', 'AssetRequest');
     }
 
     public function approval_history(): HasMany

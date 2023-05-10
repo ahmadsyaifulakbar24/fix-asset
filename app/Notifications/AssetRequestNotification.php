@@ -47,6 +47,8 @@ class AssetRequestNotification extends Notification implements ShouldQueue
             } else {
                 $line = 'Email notification new asset request from ' . $this->user->name . '.';
             }
+        } else if ($this->asset_request->status == 'revision') {
+            $line ='Email notification asset requests requested to be revised from ' . $this->user->name . '.';
         } else {
             $line ='Email notification asset request has been rejected by ' . $this->user->name . '.';
         }

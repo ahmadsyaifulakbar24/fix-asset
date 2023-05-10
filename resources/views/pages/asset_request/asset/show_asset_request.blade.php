@@ -35,7 +35,7 @@
                 <td>{{ $sub_asset_request->purpose }}</td>
                 <td>{{ number_format($sub_asset_request->estimation_price, 0, ",", ".") }}</td>
                 <td>
-                    @if ($asset_request->status == 'draft')    
+                    @if ($asset_request->status == 'draft' && Auth::user()->role == 'employee' || ($asset_request->status == 'revision' && Auth::user()->role == 'employee'))
                         <form action="{{ route('sub_asset_request.destroy', ['asset_request' => $asset_request->id, 'sub_asset_request' => $sub_asset_request->id]) }}" method="POST">
                             @csrf
                             @method('DELETE')
@@ -82,10 +82,12 @@
                             @csrf
                             @method('DELETE')
                             <a href="{{ $file->file_path_url }}" class="" target="_blank"> view </a>
+                            @if ($asset_request->status == 'draft' || ($asset_request->status == 'rejected' && Auth::user()->role == 'employee'))
                             <span>||</span>
                             <button type="submit" class="text-danger btn btn-link p-0" onclick="return checkDelete()">
                                 Delete
                             </button>
+                            @endif
                         </form>
                     </div>
                 </td>
@@ -119,7 +121,7 @@
                     <td>{{ \Carbon\Carbon::parse($approval_history->created_at)->format('Y-m-d H:i:s') }}</td>
                     <td>{{ $approval_history->task }}</td>
                     <td>{{ $approval_history->name }}</td>
-                    <td>{{ $approval_history->outcome }}</td>
+                    <td>{{ $approval_history->outcome == 'submit' ? 'request' : $approval_history->outcome }}</td>
                     <td>{{ $approval_history->comment }}</td>
                 </tr>
             @endforeach
