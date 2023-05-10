@@ -311,7 +311,7 @@ class AssetRequestController extends Controller
         if($user->role == 'employee') {
             $asset_request = AssetRequest::where('user_id', $user->id)->get();
         } else if($user->role == 'manager') {
-            $asset_request = AssetRequest::where('department_id', $user->department_id)->get();
+            $asset_request = AssetRequest::where([['department_id', $user->department_id], ['location_id', $user->location_id]])->get();
         } else {
             $asset_request = AssetRequest::where('location_id', $user->location_id)->get();
         }

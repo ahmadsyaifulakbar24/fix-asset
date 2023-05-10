@@ -20,10 +20,10 @@ class DashboardControler extends Controller
             })->count();
 
         } else if($user->role == 'manager') {
-            $total_asset_request = AssetRequest::where([['department_id', $user->department_id], ['status', '!=', 'draft']])->count();
-            $approved_asset_request = AssetRequest::where([['department_id', $user->department_id], ['role_status', 'finish']])->count();
-            $rejected_asset_request = AssetRequest::where([['department_id', $user->department_id], ['status', 'rejected']])->count();
-            $progress_asset_request = AssetRequest::where([['department_id', $user->department_id], ['role_status', '!=', 'finish']])->where(function($query) {
+            $total_asset_request = AssetRequest::where([['department_id', $user->department_id], ['location_id', $user->location_id], ['status', '!=', 'draft']])->count();
+            $approved_asset_request = AssetRequest::where([['department_id', $user->department_id], ['location_id', $user->location_id], ['role_status', 'finish']])->count();
+            $rejected_asset_request = AssetRequest::where([['department_id', $user->department_id], ['location_id', $user->location_id], ['status', 'rejected']])->count();
+            $progress_asset_request = AssetRequest::where([['department_id', $user->department_id], ['location_id', $user->location_id], ['role_status', '!=', 'finish']])->where(function($query) {
                 $query->where('status' , 'submit')->orWhere('status', 'approved')->orWhere('status', 'revision');
             })->count();
         } else {
